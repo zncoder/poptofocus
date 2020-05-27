@@ -5,12 +5,15 @@ async function popUpTab() {
   let arg = {
     url: tab.url,
     type: "popup",
+    width: Math.floor(2*window.screen.availWidth/3),
+    height: Math.floor(49*window.screen.availHeight/50),
   }
+  console.log(arg)
   if (screenBound) {
     arg.left = screenBound.left
     arg.top = screenBound.top
-    arg.width = 2*screenBound.width/3-1
-    arg.height = screenBound.height
+    arg.width = Math.floor(2*screenBound.width/3-1)
+    arg.height = Math.floor(screenBound.height)
   }
   chrome.windows.create(arg)
   chrome.tabs.remove(tab.id)
