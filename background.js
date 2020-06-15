@@ -1,19 +1,13 @@
-let screenBound
-
 async function popUpTab() {
   let tab = await currentTab()
+  let win = await getWindow(tab.windowId)
   let arg = {
     url: tab.url,
     type: "popup",
-    width: Math.floor(2*window.screen.availWidth/3),
-    height: Math.floor(49*window.screen.availHeight/50),
-  }
-  console.log(arg)
-  if (screenBound) {
-    arg.left = screenBound.left
-    arg.top = screenBound.top
-    arg.width = Math.floor(2*screenBound.width/3-1)
-    arg.height = Math.floor(screenBound.height)
+    left: win.left,
+    top: win.top,
+    width: win.width,
+    height: win.height,
   }
   chrome.windows.create(arg)
   chrome.tabs.remove(tab.id)
@@ -22,6 +16,12 @@ async function popUpTab() {
 function currentTab() {
   return new Promise(resolve => {
     chrome.tabs.query({currentWindow: true, active: true}, tabs => resolve(tabs[0]))
+  })
+}
+
+function getWindow(id) {
+  return new Promise(resolve => {
+    chrome.windows.get(id, {}, win => resolve(win))
   })
 }
 
@@ -55,16 +55,6 @@ async function popAllIn() {
   }
 }
 
-function getDisplayInfo() {
-  if (typeof(chrome.system) !== "undefined") {
-    return new Promise(resolve => {
-      chrome.system.display.getInfo(info => resolve(info))
-    })
-  } else {
-    return Promise.reject("undefined")
-  }
-}
-
 function getAllTabs() {
   return new Promise(resolve => {
     chrome.tabs.query({windowType: "popup"}, tabs => resolve(tabs))
@@ -72,13 +62,6 @@ function getAllTabs() {
 }
 
 async function init() {
-  try {
-    let info = await getDisplayInfo()
-    screenBound = info[0].workArea
-  } catch (e) {
-    console.log("screenBound not defined")
-  }
-
   chrome.contextMenus.create({id: "pop-in", title: "Pop In", contexts: ["page"]})
   chrome.contextMenus.create({id: "pop-all-in", title: "Pop All In", contexts: ["browser_action"]})
   chrome.contextMenus.onClicked.addListener(handleMenu)
