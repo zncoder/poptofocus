@@ -1,6 +1,6 @@
 {
   "name": "poptofocus",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "manifest_version": 2,
   "description": "Open current tab in a popup to focus on it",
 	"permissions": [

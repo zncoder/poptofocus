@@ -1,3 +1,5 @@
+let isFirefox = false
+
 async function popUpTab() {
   let tab = await currentTab()
   let win = await getWindow(tab.windowId)
@@ -9,6 +11,10 @@ async function popUpTab() {
     width: win.width,
     height: win.height,
   }
+	// HACK: workaround firefox bug to not use full width
+	if (isFirefox) {
+		arg.width -= 11
+	}
   chrome.windows.create(arg)
   chrome.tabs.remove(tab.id)
 }
@@ -84,6 +90,12 @@ async function init() {
   chrome.contextMenus.create({id: "pop-all-in", title: "Pop All In", contexts: ["browser_action"]})
   chrome.contextMenus.onClicked.addListener(handleMenu)
   chrome.browserAction.onClicked.addListener(popUpTab)
+
+	try {
+		browser.runtime.id
+		isFirefox = true
+	} catch (e) {
+	}
 }
 
 init()
