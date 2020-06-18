@@ -30,6 +30,9 @@ function handleMenu(info, tab) {
   case "pop-in":
     popIn(info, tab)
     break
+  case "copy-url":
+    copyUrl(tab.url)
+    break
   case "pop-all-in":
     popAllIn()
     break
@@ -48,6 +51,20 @@ function popInTab(tab) {
   chrome.tabs.remove(tab.id)
 }
 
+function copyUrl(url) {
+ 	let ta = document.createElement("textarea")
+	ta.value = url
+	document.body.appendChild(ta)
+	ta.select()
+	try {
+		document.execCommand("copy")
+	} catch (e) {
+		console.log("copy to clipboard err"); console.log(e)
+	} finally {
+		document.body.removeChild(ta)
+	}
+}
+
 async function popAllIn() {
   let tabs = await getAllTabs()
   for (let t of tabs) {
@@ -63,6 +80,7 @@ function getAllTabs() {
 
 async function init() {
   chrome.contextMenus.create({id: "pop-in", title: "Pop In", contexts: ["page"]})
+  chrome.contextMenus.create({id: "copy-url", title: "Copy URL", contexts: ["page"]})
   chrome.contextMenus.create({id: "pop-all-in", title: "Pop All In", contexts: ["browser_action"]})
   chrome.contextMenus.onClicked.addListener(handleMenu)
   chrome.browserAction.onClicked.addListener(popUpTab)
