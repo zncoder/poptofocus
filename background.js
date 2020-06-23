@@ -3,6 +3,7 @@ let isFirefox = false
 async function popUpTab() {
   let tab = await currentTab()
   popUp(tab.url, tab)
+  chrome.tabs.remove(tab.id)
 }
 
 async function popUp(url, tab) {
@@ -20,7 +21,6 @@ async function popUp(url, tab) {
     arg.width -= 11
   }
   chrome.windows.create(arg)
-  chrome.tabs.remove(tab.id)
 }
 
 function currentTab() {
